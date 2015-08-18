@@ -14,7 +14,7 @@ suite('GaiaAppIcon', () => {
 
     // DOM container to put test cases
     dom = document.createElement('div');
-    dom.innerHTML = '<gaia-app-icon></gaia-app-icon>';
+    dom.innerHTML = '<gaia-site-icon></gaia-site-icon>';
     el = dom.firstElementChild;
     document.body.appendChild(dom);
   });

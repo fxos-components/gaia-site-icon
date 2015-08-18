@@ -22,7 +22,7 @@ window.GaiaAppIcon = (function(exports) {
   var proto = Object.create(HTMLElement.prototype);
 
   // Allow the base URL to be overridden
-  var baseurl = window.GaiaAppIconBaseurl || 'gaia-app-icon/';
+  var baseurl = window.GaiaAppIconBaseurl || 'gaia-site-icon/';
 
   proto.createdCallback = function() {
     this._template = template.content.cloneNode(true);
@@ -389,7 +389,8 @@ window.GaiaAppIcon = (function(exports) {
   };
 
   proto._relayout = function() {
-    this._size = this.clientWidth;
+    var bookmarkIcon = this.bookmark && this.bookmark.icon;
+    this._size = this.clientWidth || (bookmarkIcon && bookmarkIcon.size);
     this._container.style.width = this._container.style.height =
       this._size + 'px';
     this._size *= window.devicePixelRatio;
@@ -476,47 +477,7 @@ window.GaiaAppIcon = (function(exports) {
     // Handle icon loading for bookmarks, app icon loading is more involved
     // and handled below this block.
     if (this.bookmark) {
-      if (this.bookmark.icon) {
-        // It'd be great to just set the src here, but we need to be able
-        // to read-back the image, so use system XHR.
-        var xhr = new XMLHttpRequest({ mozAnon: true, mozSystem: true });
-
-        xhr.open('GET', this.bookmark.icon, true);
-        xhr.responseType = 'blob';
-        xhr.timeout = ICON_FETCH_TIMEOUT;
-
-        this._pendingIconUrl = this.bookmark.icon;
-
-        xhr.onload = function load(image) {
-          if (!image.onload) {
-            return;
-          }
-
-          if (xhr.status !== 0 && xhr.status !== 200) {
-            image.onerror(xhr.status);
-          } else {
-            image.src = URL.createObjectURL(xhr.response);
-          }
-        }.bind(this, this._image);
-
-        xhr.onerror = function error(image, e) {
-          if (image.onload) {
-            image.onerror(e);
-          }
-        }.bind(this, this._image);
-
-        try {
-          xhr.send();
-          return;
-        } catch(e) {
-          console.error('Error loading bookmark icon', e);
-        }
-      }
-
-      // Fallback to the default icon
-      if (!this._hasIcon) {
-        this._setPredefinedIcon('default');
-      }
+      this._renderBookmark();
       return;
     }
 
@@ -561,6 +522,61 @@ window.GaiaAppIcon = (function(exports) {
     }
   };
 
+  proto._renderBookmark = function() {
+    if (this.bookmark.icon) {
+      if (typeof this.bookmark.icon === 'string') {
+        this._fetchIcon(this.bookmark.icon);
+      } else {
+        var blob = this.bookmark.icon.blob;
+        var url = URL.createObjectURL(blob);
+        this._image.src = url;
+      }
+      return;
+    }
+
+    // Fallback to the default icon
+    if (!this._hasIcon) {
+      this._setPredefinedIcon('default');
+    }
+  };
+
+  proto._fetchIcon = function(url) {
+    // It'd be great to just set the src here, but we need to be able
+    // to read-back the image, so use system XHR.
+    var xhr = new XMLHttpRequest({ mozAnon: true, mozSystem: true });
+
+    xhr.open('GET', url, true);
+    xhr.responseType = 'blob';
+    xhr.timeout = ICON_FETCH_TIMEOUT;
+
+    this._pendingIconUrl = this.bookmark.icon;
+
+    xhr.onload = function load(image) {
+      if (!image.onload) {
+        return;
+      }
+
+      if (xhr.status !== 0 && xhr.status !== 200) {
+        image.onerror(xhr.status);
+      } else {
+        image.src = URL.createObjectURL(xhr.response);
+      }
+    }.bind(this, this._image);
+
+    xhr.onerror = function error(image, e) {
+      if (image.onload) {
+        image.onerror(e);
+      }
+    }.bind(this, this._image);
+
+    try {
+      xhr.send();
+      return;
+    } catch(e) {
+      console.error('Error loading bookmark icon', e);
+    }
+  };
+
   proto.handleEvent = function(e) {
     switch(e.type) {
     case 'progress':
@@ -584,5 +600,5 @@ window.GaiaAppIcon = (function(exports) {
      <div id='image-container'><div id="spinner"></div></div>
      <div><div id='subtitle'></div></div>`;
 
-  return document.registerElement('gaia-app-icon', { prototype: proto });
+  return document.registerElement('gaia-site-icon', { prototype: proto });
 })(window);

@@ -1,17 +1,17 @@
-# gaia-app-icon
+# gaia-site-icon
 
 > A web component to show an icon for an application.
 
 ## Basic usage
 
-With web components enabled, source the script and add a gaia-app-icon element to your document, like so:
+With web components enabled, source the script and add a gaia-site-icon element to your document, like so:
 
 ```html
 <head>
-  <script src="gaia-app-icon/script.js"></script>
+  <script src="gaia-site-icon/script.js"></script>
   <script>
-    var gaiaAppIcon = document.createElement('gaia-app-icon');
-    document.body.appendChild(gaiaAppIcon);
+    var gaiaSiteIcon = document.createElement('gaia-site-icon');
+    document.body.appendChild(gaiaSiteIcon);
   </script>
 </head>
 ```
@@ -20,19 +20,19 @@ With web components enabled, source the script and add a gaia-app-icon element t
 
 ### Properties
 
-#### gaiaAppIcon.app
+#### gaiaSiteIcon.app
 
-#### gaiaAppIcon.entryPoint
+#### gaiaSiteIcon.entryPoint
 
-#### gaiaAppIcon.bookmark
+#### gaiaSiteIcon.bookmark
 
-#### gaiaAppIcon.icon
+#### gaiaSiteIcon.icon
 
 ### Methods
 
-#### gaiaAppIcon.launch()
+#### gaiaSiteIcon.launch()
 
-#### gaiaAppIcon.refresh()
+#### gaiaSiteIcon.refresh()
 
 ### Events
 
