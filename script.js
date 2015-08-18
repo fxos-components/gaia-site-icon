@@ -71,6 +71,17 @@ window.GaiaAppIcon = (function(exports) {
     this.refresh();
   };
 
+  Object.defineProperty(proto, 'site', {
+    get: function() {
+      return this._site;
+    },
+    set: function(site) {
+      this._site = site;
+      this._image = null;
+      this.refresh();
+    }
+  });
+
   Object.defineProperty(proto, 'app', {
     get: function() {
       return this._app;
@@ -95,6 +106,7 @@ window.GaiaAppIcon = (function(exports) {
       }
 
       this._bookmark = null;
+      this._site = null;
       this._app.addEventListener('progress', this);
       this._app.addEventListener('downloaderror', this);
       this._app.addEventListener('downloadsuccess', this);
@@ -168,6 +180,7 @@ window.GaiaAppIcon = (function(exports) {
 
     set: function(bookmark) {
       this.app = null;
+      this._site = null;
       this._bookmark = bookmark;
     },
 
@@ -307,7 +320,7 @@ window.GaiaAppIcon = (function(exports) {
         ctx.shadowOffsetX = SHADOW_OFFSET.x;
         ctx.shadowOffsetY = SHADOW_OFFSET.y;
 
-        if (this.bookmark && !this._hasPredefinedIcon) {
+        if ((this.bookmark && !this._hasPredefinedIcon) || this.site) {
           if (this._image.width <= this._size / 2) {
             // Draw filled background circle
             ctx.beginPath();
@@ -358,6 +371,8 @@ window.GaiaAppIcon = (function(exports) {
           if (image.onload) {
             image.src = URL.createObjectURL(blob);
           }
+          this._blob = blob;
+          this.dispatchEvent(new CustomEvent('icon-loaded'));
         }.bind(this, this._image));
       }
 
@@ -389,7 +404,7 @@ window.GaiaAppIcon = (function(exports) {
   };
 
   proto._relayout = function() {
-    this._size = this.clientWidth;
+    this._size = this.clientWidth || (this.site && this.site.size);
     this._container.style.width = this._container.style.height =
       this._size + 'px';
     this._size *= window.devicePixelRatio;
@@ -517,6 +532,11 @@ window.GaiaAppIcon = (function(exports) {
       if (!this._hasIcon) {
         this._setPredefinedIcon('default');
       }
+      return;
+    }
+
+    if (this.site) {
+      this._image.src = URL.createObjectURL(this.site.icon);
       return;
     }
 
