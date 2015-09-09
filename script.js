@@ -60,7 +60,7 @@ window.GaiaAppIcon = (function(exports) {
         return;
       }
       this.launch();
-    }
+    };
 
     this.addEventListener('keydown', (e) => {
       switch (e.keyCode) {
@@ -283,7 +283,7 @@ window.GaiaAppIcon = (function(exports) {
         this._image = null;
         this._hasIcon = true;
 
-        if (!this._hasPredefinedIcon && !this._hasUserSetIcon) {
+        if (!this._hasPredefinedIcon) {
           this.dispatchEvent(new CustomEvent('icon-loaded'));
         }
 
