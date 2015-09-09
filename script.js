@@ -22,7 +22,11 @@ window.GaiaAppIcon = (function(exports) {
   var proto = Object.create(HTMLElement.prototype);
 
   // Allow the base URL to be overridden
-  var baseurl = window.GaiaAppIconBaseurl || 'gaia-app-icon/';
+  var base = window.GAIA_ICONS_BASE_URL ||
+           window.COMPONENTS_BASE_URL ||
+           'bower_components/';
+
+  var baseurl = window.GaiaAppIconBaseurl || base + 'gaia-site-icon/';
 
   proto.createdCallback = function() {
     this._template = template.content.cloneNode(true);
