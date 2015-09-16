@@ -251,19 +251,16 @@ window.GaiaAppIcon = (function(exports) {
     if (this.app) {
       this.app.launch(this.entryPoint);
     } else {
-      this.icon.then((blob) => {
-        var features = {
-          name: this.bookmark.name,
-          icon: URL.createObjectURL(blob),
-          remote: true
-        };
+      var features = {
+        name: this.bookmark.name,
+        remote: true
+      };
 
-        window.open(this.bookmark.url, '_blank', Object.keys(features).
-          map(function eachFeature(key) {
-            return encodeURIComponent(key) + '=' +
-              encodeURIComponent(features[key]);
-          }).join(','));
-      });
+      window.open(this.bookmark.url, '_blank', Object.keys(features)
+        .map(function eachFeature(key) {
+          return encodeURIComponent(key) + '=' +
+            encodeURIComponent(features[key]);
+        }).join(','));
     }
   };
 
