@@ -256,7 +256,7 @@ window.GaiaAppIcon = (function(exports) {
         remote: true
       };
 
-      window.open(this.bookmark.url, '_blank', Object.keys(features)
+      window.open(this.bookmark.url, '_samescope', Object.keys(features)
         .map(function eachFeature(key) {
           return encodeURIComponent(key) + '=' +
             encodeURIComponent(features[key]);
