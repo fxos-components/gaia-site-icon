@@ -479,43 +479,6 @@ window.GaiaAppIcon = (function(exports) {
     // Handle icon loading for bookmarks, app icon loading is more involved
     // and handled below this block.
     if (this.bookmark) {
-      if (this.bookmark.icon) {
-        // It'd be great to just set the src here, but we need to be able
-        // to read-back the image, so use system XHR.
-        var xhr = new XMLHttpRequest({ mozAnon: true, mozSystem: true });
-
-        xhr.open('GET', this.bookmark.icon, true);
-        xhr.responseType = 'blob';
-        xhr.timeout = ICON_FETCH_TIMEOUT;
-
-        this._pendingIconUrl = this.bookmark.icon;
-
-        xhr.onload = function load(image) {
-          if (!image.onload) {
-            return;
-          }
-
-          if (xhr.status !== 0 && xhr.status !== 200) {
-            image.onerror(xhr.status);
-          } else {
-            image.src = URL.createObjectURL(xhr.response);
-          }
-        }.bind(this, this._image);
-
-        xhr.onerror = function error(image, e) {
-          if (image.onload) {
-            image.onerror(e);
-          }
-        }.bind(this, this._image);
-
-        try {
-          xhr.send();
-          return;
-        } catch(e) {
-          console.error('Error loading bookmark icon', e);
-        }
-      }
-
       // Fallback to the default icon
       if (!this._hasIcon) {
         this._setPredefinedIcon('default');
