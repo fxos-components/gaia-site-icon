@@ -548,7 +548,7 @@ window.GaiaAppIcon = (function(exports) {
   template.innerHTML =
     `<style>@import url(${stylesheet});</style>
      <div id='image-container'><div id="spinner"></div></div>
-     <div><div id='subtitle'></div></div>`;
+     <div><div dir='auto' id='subtitle'></div></div>`;
 
   return document.registerElement('gaia-app-icon', { prototype: proto });
 })(window);
