@@ -17,7 +17,6 @@ window.GaiaAppIcon = (function(exports) {
   const DEFAULT_BACKGROUND_COLOR = 'rgb(228, 234, 238)';
   const CANVAS_PADDING = 2 * window.devicePixelRatio;
   const FAVICON_SCALE = 0.55;
-  const ICON_FETCH_TIMEOUT = 10000;
 
   var proto = Object.create(HTMLElement.prototype);
 
@@ -44,6 +43,10 @@ window.GaiaAppIcon = (function(exports) {
     this._hasIcon = false;
     this._hasUserSetIcon = false;
     this._hasPredefinedIcon = false;
+    this._iconUrl = null;
+    this._pendingIconUrl = null;
+    this._pendingIconRefresh = false;
+    this._lastState = null;
 
     this._predefinedIcons = {};
     for (var key in PREDEFINED_ICONS) {
@@ -223,6 +226,14 @@ window.GaiaAppIcon = (function(exports) {
     enumerable: true
   });
 
+  Object.defineProperty(proto, 'isUserSet', {
+    get: function() {
+      return this._iconUrl === 'user-set';
+    },
+
+    enumerable: true
+  });
+
   proto._cancelIconLoad = function() {
     if (!this._image) {
       return;
@@ -286,7 +297,7 @@ window.GaiaAppIcon = (function(exports) {
 
         // Set icon URL on dataset, for testing.
         if (this._pendingIconUrl) {
-          this.dataset.testIconUrl = this._pendingIconUrl;
+          this._iconUrl = this.dataset.testIconUrl = this._pendingIconUrl;
           this._pendingIconUrl = null;
         }
 
