@@ -40,7 +40,9 @@ window.GaiaAppIcon = (function(exports) {
     shadow.appendChild(this._template);
 
     this._container = shadow.getElementById('image-container');
+    this._titleContainer = shadow.getElementById('title-container');
     this._subtitle = shadow.getElementById('subtitle');
+    this._showName = true;
     this._image = null;
     this._app = null;
     this._bookmark = null;
@@ -243,6 +245,22 @@ window.GaiaAppIcon = (function(exports) {
         delete this.dataset.testIconUrl;
         this._cancelIconLoad();
         this._removeOldIcon();
+      }
+    },
+
+    enumerable: true
+  });
+
+  Object.defineProperty(proto, 'showName', {
+    get: function() {
+      return this._showName;
+    },
+
+    set: function(show) {
+      show = show ? true : false;
+      if (this._showName !== show) {
+        this._showName = show;
+        this._titleContainer.classList.toggle('hidden', !show);
       }
     },
 
@@ -611,8 +629,8 @@ window.GaiaAppIcon = (function(exports) {
   var stylesheet = baseurl + 'style.css';
   template.innerHTML =
     `<style>@import url(${stylesheet});</style>
-     <div id='image-container'><div id="spinner"></div></div>
-     <div><div dir='auto' id='subtitle'></div></div>`;
+     <div id="image-container"><div id="spinner"></div></div>
+     <div id="title-container"><div dir="auto" id="subtitle"></div></div>`;
 
   return document.registerElement('gaia-app-icon', { prototype: proto });
 })(window);
