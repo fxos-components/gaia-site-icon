@@ -18,12 +18,6 @@ window.GaiaAppIcon = (function(exports) {
   const CANVAS_PADDING = 2 * window.devicePixelRatio;
   const FAVICON_SCALE = 0.55;
 
-  // FIXME: Remove once bug 1211266 is fixed.
-  // navigator.mozApps.mgmt.getIcon returns a blob, but requesting the data
-  // for it sometimes fails silently.
-  const ICON_LOAD_TIMEOUT = 5000;
-  const ICON_RETRY_COUNT = 5;
-
   var proto = Object.create(HTMLElement.prototype);
 
   // Allow the base URL to be overridden
@@ -55,9 +49,6 @@ window.GaiaAppIcon = (function(exports) {
     this._pendingIconUrl = null;
     this._pendingIconRefresh = false;
     this._lastState = null;
-
-    // FIXME: Remove once bug 1211266 is fixed.
-    this._iconFetchTimeout = null;
 
     this._predefinedIcons = {};
     for (var key in PREDEFINED_ICONS) {
@@ -330,12 +321,6 @@ window.GaiaAppIcon = (function(exports) {
     this._image.setAttribute('role', 'presentation');
 
     this._image.onload = () => {
-      // FIXME: Remove once bug 1211266 is fixed
-      if (this._iconFetchTimeout) {
-        clearTimeout(this._iconFetchTimeout);
-        this._iconFetchTimeout = null;
-      }
-
       this._image.onload = () => {
         // Add new icon
         this._removeOldIcon();
@@ -566,13 +551,6 @@ window.GaiaAppIcon = (function(exports) {
         break;
 
       case 'installed':
-        // FIXME: Remove once bug 1211266 is fixed.
-        var retryCount = 0;
-        if (this._iconFetchTimeout) {
-          clearTimeout(this._iconFetchTimeout);
-          this._iconFetchTimeout = null;
-        }
-
         var handleError = function(image, e) {
           console.error('Failed to retrieve icon', e);
           if (image.onload && !this._hasIcon) {
@@ -588,17 +566,6 @@ window.GaiaAppIcon = (function(exports) {
               this._pendingIconUrl = 'app-icon';
               if (image.onload) {
                 image.src = URL.createObjectURL(blob);
-
-                // FIXME: Remove once bug 1211266 is fixed.
-                this._iconFetchTimeout = setTimeout(() => {
-                  this._iconFetchTimeout = null;
-                  if (++retryCount >= ICON_RETRY_COUNT) {
-                    handleError(image, 'Bug 1211266: Icon load timed out');
-                  }
-                  console.debug('Bug 1211266: getIcon retry ' + retryCount +
-                                ' for ' + this.dataset.identifier);
-                  getImage();
-                }, ICON_LOAD_TIMEOUT);
               }
             }.bind(this, this._image),
             handleError.bind(this, this._image));
